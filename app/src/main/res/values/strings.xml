@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SplitzTemplateApp</string>
+    <string name="title_search">Search</string>
+    <string name="title_repos">My Repos</string>
+</resources>

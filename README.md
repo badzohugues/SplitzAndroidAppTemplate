@@ -1,1 +1,1 @@
-# SplitzTemplate
+# SplitzAndroidAppTemplate
