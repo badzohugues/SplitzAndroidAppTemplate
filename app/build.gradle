@@ -8,15 +8,16 @@ plugins {
 }
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.badzohugues.splitztemplateapp"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+        buildConfigField("String", "BEARER_TOKEN", BEARER_TOKEN)
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -41,6 +42,10 @@ android {
     }
 }
 
+configurations {
+    ktlint
+}
+
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
     implementation "androidx.core:core-ktx:$versions.coreKtx"
@@ -48,12 +53,37 @@ dependencies {
     implementation "com.google.android.material:material:$versions.material"
     implementation "androidx.constraintlayout:constraintlayout:$versions.constraintLayout"
 
+    implementation "io.coil-kt:coil:$versions.coil"
+    implementation "com.google.code.gson:gson:$versions.gson"
+    implementation "com.squareup.okhttp3:logging-interceptor:$versions.okhttpInterceptor"
+
+    // Navigation
+    implementation "androidx.navigation:navigation-fragment-ktx:$versions.fragment"
+    implementation "androidx.navigation:navigation-ui-ktx:$versions.navigation"
+    implementation "androidx.legacy:legacy-support-v4:$versions.legacySupport"
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$versions.retrofit2"
+    implementation "com.squareup.retrofit2:converter-gson:$versions.retrofitConverter"
+
+    // Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.coroutinesCore"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutinesAndroid"
+
+    // Lifecycle
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.livedata"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
+
+    // Room
+    implementation "androidx.room:room-runtime:$versions.room"
+    implementation "androidx.room:room-ktx:$versions.room"
+
     // Hilt
     implementation "com.google.dagger:hilt-android:$versions.daggerHilt"
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     kapt "com.google.dagger:hilt-compiler:$versions.daggerHilt"
+
+    //KtLint
+    ktlint "com.pinterest:ktlint:$versions.ktlint"
 
     // Local Test
     testImplementation "junit:junit:$versions.junit"
@@ -61,4 +91,22 @@ dependencies {
     // Instrumentation Test
     androidTestImplementation "androidx.test.ext:junit:$versions.testJunit"
     androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
+}
+
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code style."
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args "src/**/*.kt"
+}
+
+afterEvaluate {
+    assembleDebug.dependsOn ktlint
+}
+
+task ktlintFormat(type: JavaExec, group: "formatting") {
+    description = "Fix Kotlin code style deviations."
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args "-F", "src/**/*.kt"
 }
